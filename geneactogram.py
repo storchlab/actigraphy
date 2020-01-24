@@ -157,7 +157,7 @@ def calc_sleep(roll, thresh_method='fixed', thresh_value=5):
     sleep = (roll < thresh) * 1
     return sleep.rename('sleep')
 
-def plot_actogram(data, tz_off=-5, binsize=5, doubleplot=1, scale=5, title=1):
+def plot_actogram(data, tz_off=-5, binsize=5, doubleplot=1, scale=5, title=1, first=0, last=0):
     """"Prepare data and plot an inactogram"""
 
     if not type(data) == pd.core.series.Series:
@@ -176,6 +176,13 @@ def plot_actogram(data, tz_off=-5, binsize=5, doubleplot=1, scale=5, title=1):
     backpad = np.zeros(daylength - (end[3]*60 + end[4]) // binsize - 1)
 
     counts = np.concatenate([frontpad, data.values, backpad])
+
+    # Keep wanted days only
+    if last:
+        counts = counts[:last*daylength]
+
+    if not first:
+        counts = counts[first*daylength:]        
 
     ndays = counts.shape[0] // daylength
 
@@ -218,14 +225,17 @@ def plot_actogram(data, tz_off=-5, binsize=5, doubleplot=1, scale=5, title=1):
         poly2 = Polygon(verts, facecolor='k', edgecolor=None, closed=False)
         ax.add_patch(poly2)
         ax.set_xlim(0,2880)
-        ax.set_ylim(0,ndays+1)
     else:
         ax.set_xlim(0,1440)
-        ax.set_ylim(0,ndays)
-    plt.show()
-
+    
+    ax.set_ylim(0,ndays)
+    
     if title:
-        plt.title(data.name)
+        plt.title(data.name)   
+    
+    plt.yticks(np.arange(0.5, ndays+0.5), labels=np.arange(ndays, 0, -1).astype('str'))
+    
+    plt.show()
 
 
 if __name__ == "__main__":
