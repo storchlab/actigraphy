@@ -225,10 +225,18 @@ def plot_actogram(data, tz_off=-5, binsize=5, doubleplot=1, scale=5, title=1, fi
         poly2 = Polygon(verts, facecolor='k', edgecolor=None, closed=False)
         ax.add_patch(poly2)
         ax.set_xlim(0,2880)
+        ax.set_xticks(np.arange(0,2880,240))
+        ax.set_xticklabels([a+':00' if len(a)==2 else '0' + a + ':00' for a
+                            in np.tile(np.arange(0,24,4),2).astype('str')])
     else:
         ax.set_xlim(0,1440)
+        ax.set_xticks(np.arange(0,1440,240))
+        ax.set_xticklabels([a+':00' if len(a)==2 else '0' + a + ':00' for a
+                            in np.arange(0,24,4).astype('str')])
     
     ax.set_ylim(0,ndays)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Days')
     
     if title:
         plt.title(data.name)   
